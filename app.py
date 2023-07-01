@@ -59,3 +59,7 @@ def search():
     print(f"result: {result}")
 
     return jsonify(result)
+
+
+if __name__ == "__main__":
+    app.run()

@@ -169,7 +169,7 @@ def get_driver(data):
         chrome_options.add_argument("--disable-blink-features=AutomationControlled")
         chrome_options.add_experimental_option("prefs", {"credentials_enable_service": False, "profile.password_manager_enabled": False})
 
-        driver = uc.Chrome(headless=True, use_subprocess=False)
+        driver = uc.Chrome(headless=True, use_subprocess=False, options=chrome_options)
 
         driver.get(url)
 
