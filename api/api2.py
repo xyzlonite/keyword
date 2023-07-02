@@ -243,7 +243,7 @@ def get_driver(data):
         print(f"에러: {e}")
 
     finally:
-        time.sleep(3)
+        driver.quit()
 
 
 if __name__ == "__main__":
