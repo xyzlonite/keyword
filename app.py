@@ -1,7 +1,7 @@
 from dotenv import load_dotenv
 from flask import Flask, jsonify, request
 
-from api.api2 import get_driver
+from api.api import get_driver
 
 # from flask_cors import CORS
 
