@@ -6,6 +6,9 @@
 app = "keyword"
 kill_timeout = 300
 
+[env]
+  PORT = "8080"
+
 [[services]]
   internal_port = 8080
   protocol = "tcp"

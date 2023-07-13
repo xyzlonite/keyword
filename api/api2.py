@@ -4,14 +4,16 @@ import time
 import undetected_chromedriver as uc
 from bs4 import BeautifulSoup
 
+# from webdriver_manager.chrome import ChromeDriverManager
+# from webdriver_manager.core.utils import ChromeType
+from selenium.common.exceptions import NoSuchElementException
+
 # from selenium import webdriver
 # from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.common.by import By
+from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
-
-# from webdriver_manager.chrome import ChromeDriverManager
-# from webdriver_manager.core.utils import ChromeType
 
 
 def get_blogstadard_api(driver):
@@ -158,7 +160,6 @@ def get_driver(data):
             AppleWebKit/537.36 (KHTML, like Gecko) Chrome/96.0.4664 Safari/537.36"
         )
         chrome_options.add_argument("--incognito")
-
         chrome_options.add_argument("--disable-extensions")
         chrome_options.add_argument("--disable-application-cache")
         chrome_options.add_argument("--disable-gpu")
@@ -191,33 +192,44 @@ def get_driver(data):
 
         results = {}
 
-        # data = {}
+        data = {}
 
         for keyword in keywords:
-            # input_element = driver.find_element(By.ID, "keyword")
-            # input_element.clear()
+            input_element = driver.find_element(By.ID, "keyword")
+            input_element.clear()
 
-            # input_element.send_keys(keyword)
-            # input_element.send_keys(Keys.ENTER)
-            # time.sleep(1)
+            input_element.send_keys(keyword)
+            input_element.send_keys(Keys.ENTER)
+            time.sleep(2)
 
-            # try:
-            #     # switch to the alert window
-            #     alert = driver.switch_to.alert
+            try:
+                # switch to the alert window
+                alert = driver.switch_to.alert
 
-            #     print(f"alert: {alert.text}")
+                # Check if "airsearch" is in the text
+                if "에어서치" in alert.text:
+                    data["isAirSearch"] = True
 
-            #     # Check if "airsearch" is in the text
-            #     if "에어서치" in alert.text:
-            #         data["isAirSearch"] = True
-            #     else:
-            #         data["isAirSearch"] = False
+                    alert = driver.switch_to.alert
+                    print(f"alert: {alert.text}")
 
-            #     # dismiss the alert by clicking the cancel button
-            #     alert.dismiss()
-            # except Exception:
-            #     # 알림창이 없으면 그냥 넘어가기
-            #     pass
+                    alert.dismiss()
+
+                # dismiss the alert
+                # dismiss the alert by clicking the cancel button
+
+            except Exception as e:
+                data["isAirSearch"] = False
+                print(f"에어서치 : {e}")
+                pass
+
+            time.sleep(2)
+
+            try:
+                driver.find_element(By.CLASS_NAME, "swal2-confirm").click()
+            except Exception as e:
+                print(f"정렬 : {e}")
+                pass
 
             # keyword = "신사동맛집"
 
@@ -226,16 +238,15 @@ def get_driver(data):
             driver.get(static_url)
             time.sleep(2)
 
-            results[keyword] = get_blogstadard_api(driver)
+            # results[keyword] = get_blogstadard_api(driver)
+            # time.sleep(2)
+
+            data.update(get_blogstadard_api(driver))
+            results[keyword] = data
+
+            url = "https://blogstand.net/naver/blog.do"
+            driver.get(url)
             time.sleep(2)
-
-            # data.update(get_blogstadard_api(driver))
-
-            # results[keyword] = data
-
-            # url = "https://blogstand.net/login/loginForm.do"
-            # driver.get(static_url)
-            # time.sleep(3)
 
         return results
 
@@ -261,7 +272,7 @@ if __name__ == "__main__":
 
     # # keyword = "신사동맛집"
 
-    data = {"user_id": "isanghan12@naver.com", "user_pw": "isanghan12", "keywords": ["대실역고기집"]}
+    data = {"user_id": "isanghan12@naver.com", "user_pw": "isanghan12", "keywords": ["신사동카페"]}
 
     result = get_driver(data)
     print(result)
